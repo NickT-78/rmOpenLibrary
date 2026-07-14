@@ -1,12 +1,13 @@
 # Architecture — rmOpenLibrary
 
-Cible: reMarkable Paper Pro (`ferrari`), OS 4.0.813 (kirkstone), toolchain
-`aarch64-remarkable-linux-gcc` (cortex-a53).
+Cible: reMarkable Paper Pro (`ferrari`), SDK `5.7.119`, sysroot
+`cortexa53-crypto-remarkable-linux`, **Qt 6.8.2** (confirmé empiriquement,
+cf ADR-002 — pas Qt5 comme supposé initialement en Phase 1).
 
 ## Couches (n-tiers)
 
 ```
-ui/       QML (Qt Quick) — Settings, Search, Result list. Aucune logique métier.
+ui/       QML (Qt Quick 6, imports non-versionnés) — Settings, Search, Result list. Aucune logique métier.
 domain/   C++ — modèles (Book, SearchQuery, Session), services
           (SearchService, AuthService, CacheService), interfaces (ports).
 data/     C++ — implémentations concrètes: HttpClient (curl/QNetworkAccessManager),
@@ -30,8 +31,10 @@ Règle de dépendance: `ui -> domain -> data` (jamais l'inverse).
 
 ## Build
 
-CMake + toolchain file généré par le SDK Yocto (`environment-setup-*`).
-Cross-compilation uniquement (host x86_64 -> target aarch64).
+CMake + `qt-cmake` wrapper du SDK Yocto (préférer `qt-cmake` à un
+`CMAKE_TOOLCHAIN_FILE` manuel : il fixe automatiquement `Qt6_DIR`,
+`CMAKE_PREFIX_PATH` et le sysroot). Cross-compilation uniquement
+(host x86_64 -> target aarch64).
 
 ## Conformité
 
