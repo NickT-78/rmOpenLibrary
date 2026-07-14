@@ -4,7 +4,7 @@ Client OpenLibrary natif pour reMarkable Paper Pro (`ferrari`). Recherche
 de livres, tri/filtres, consultation hors-ligne via cache local.
 
 - Licence: LGPL-3.0
-- Cible: reMarkable Paper Pro (OS 4.0.813+, Qt Quick/QML, C++17)
+- Cible: reMarkable Paper Pro (SDK ferrari 5.7.119, Qt 6.8.2 Quick/QML, C++17)
 - Statut: Phase 1 — scaffolding
 
 ## Limitations connues
@@ -29,12 +29,22 @@ Voir `ARCHITECTURE.md`.
 
 ## Build
 
+Cible: Qt 6.8.2 (SDK `ferrari/5.7.119`). Qt5 n'existe pas sur ce SDK.
+
 ```bash
-source /path/to/sdk/environment-setup-cortexa53-crypto-remarkable-linux
+source /opt/codex/ferrari/5.7.119/environment-setup-cortexa53-crypto-remarkable-linux
 mkdir build && cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=$OECORE_NATIVE_SYSROOT/usr/share/cmake/OEToolchainConfig.cmake ..
+cmake -DCMAKE_TOOLCHAIN_FILE=$OECORE_NATIVE_SYSROOT/usr/share/cmake/OEToolchainConfig.cmake \
+      -DCMAKE_PREFIX_PATH=$OECORE_TARGET_SYSROOT/usr/lib/cmake \
+      -DQt6_DIR=$OECORE_TARGET_SYSROOT/usr/lib/cmake/Qt6 \
+      ..
 make -j$(nproc)
 ```
+
+Si `Qt6Config.cmake` reste introuvable malgré `libQt6Core.so` présent : le SDK
+ne fournit que le runtime, pas les dev-cmake-configs. Vérifier
+`find $OECORE_TARGET_SYSROOT -iname "qt-cmake*"` — s'il existe, l'utiliser
+directement en remplacement de `cmake` (il pré-configure `CMAKE_PREFIX_PATH`).
 
 ## Déploiement
 
