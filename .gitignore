@@ -1,0 +1,7 @@
+build/
+*.o
+*.so
+CMakeFiles/
+CMakeCache.txt
+*.moc
+.qtc_clangd/
